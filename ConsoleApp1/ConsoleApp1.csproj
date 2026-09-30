@@ -13,8 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Adoator\" />
-    <Folder Include="Models\" />
     <Folder Include="Analysis\" />
     <Folder Include="Events\" />
     <Folder Include="Meessaging\" />

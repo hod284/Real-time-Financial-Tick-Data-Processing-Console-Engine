@@ -1,31 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ConsoleApp1.Models;
 
 namespace ConsoleApp1.singleton
 {
+    //업비트랑 바이넨스에서 받은 종목을 한글이름으로 한글이름을 코드로 변환 
     public sealed class SymbolDirectory
     {
-        private Dictionary<string,string> _namecode = new Dictionary<string, string>();
-        private Dictionary<string,string> _codeanme = new Dictionary<string,string>();
-        public void Add(string name, string code)
+        private Dictionary<(Exchange,string),string> _namecode = new Dictionary<(Exchange,string), string>();
+        private Dictionary<(Exchange, string), string> _codeanme = new Dictionary<(Exchange, string), string>();
+        public void Add(Exchange ex, string name, string code)
         {
-            if (!_namecode.TryAdd(name, code))
-            {
-                _namecode[name] = code;
-            }
-            if (!_codeanme.TryAdd(code, name))
+          
+             _namecode[(ex,name)] = code;
+            if (!_codeanme.TryAdd((ex,code), name))
             { 
-               _codeanme [code] = name;
+               _codeanme [(ex,code)] = name;
             }
+            
         }
-        public string? Findcode(string name)
+        public string? Findcode(Exchange ex, string name)
         { 
-        return  _namecode [name];
+           return  _namecode [(ex,name)];
         }
-        public string? Findname(string code)
+        public string? Findname(Exchange ex,string code)
         {
-            return _codeanme[code];
+            return _codeanme[(ex, code)];
+        }
+        public IReadOnlyList<string> CodesOf(Exchange ex)
+        { 
+           return _namecode.Where(x=> x.Key.Item1 == ex).Select(x=>x.Value).ToList(); 
         }
     }
 }

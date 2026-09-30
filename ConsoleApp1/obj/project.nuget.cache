@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "M4OS4DEKbrw=",
+  "dgSpecHash": "a8DNGff/ASo=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dev\\source\\repos\\ConsoleApp1\\ConsoleApp1\\ConsoleApp1.csproj",
+  "projectFilePath": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\ConsoleApp1.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dev\\.nuget\\packages\\microsoft.extensions.configuration\\10.0.12\\microsoft.extensions.configuration.10.0.12.nupkg.sha512",
     "C:\\Users\\dev\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\10.0.12\\microsoft.extensions.configuration.abstractions.10.0.12.nupkg.sha512",
