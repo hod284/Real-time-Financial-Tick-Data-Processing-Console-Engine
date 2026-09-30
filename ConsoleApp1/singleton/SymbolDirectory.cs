@@ -10,15 +10,14 @@ namespace ConsoleApp1.singleton
     {
         private Dictionary<(Exchange,string),string> _namecode = new Dictionary<(Exchange,string), string>();
         private Dictionary<(Exchange, string), string> _codeanme = new Dictionary<(Exchange, string), string>();
+
         public void Add(Exchange ex, string name, string code)
         {
-          
              _namecode[(ex,name)] = code;
             if (!_codeanme.TryAdd((ex,code), name))
             { 
                _codeanme [(ex,code)] = name;
             }
-            
         }
         public string? Findcode(Exchange ex, string name)
         { 
@@ -32,5 +31,22 @@ namespace ConsoleApp1.singleton
         { 
            return _namecode.Where(x=> x.Key.Item1 == ex).Select(x=>x.Value).ToList(); 
         }
+        public IReadOnlyList<string> NameOf(Exchange ex)
+        { 
+           return _codeanme.Where(x=> x.Key.Item1 == ex).Select(x=>x.Value).ToList(); 
+        }
+// 대소문자 무시 비교 (btcusdt == BTCUSDT)
+        private sealed class KeyComparer : IEqualityComparer<(Exchange, string)>
+        {
+             public bool Equals((Exchange, string) a, (Exchange, string) b)
+             {
+                a.Item1 == b.Item1 && string.Equals(a.Item2, b.Item2, StringComparison.OrdinalIgnoreCase);
+             }
+            public int GetHashCode((Exchange, string) k) 
+            {
+              HashCode.Combine(k.Item1, StringComparer.OrdinalIgnoreCase.GetHashCode(k.Item2));
+            }
+        }
+
     }
 }
