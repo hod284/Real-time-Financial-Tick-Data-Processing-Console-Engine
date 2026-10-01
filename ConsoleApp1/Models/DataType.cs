@@ -2,7 +2,7 @@
 {
     // 공통 부모: 모든 시장 데이터가 공통으로 가진 정보
     public abstract record MarketEvent(
-        string Exchange,// "upbit", "binance"
+        Exchange Exchange,// "upbit", "binance"
           string Symbol, // "KRW-BTC", "BTCUSDT"
           long ExchTimeMs, // 거래소에서 발생한 시각
           long RecvTimeMs  // 내가 받은 시각
@@ -10,7 +10,7 @@
 
     // 체결
     public sealed record TradeEvent(
-        string Exchange, 
+        Exchange Exchange, 
         string Symbol,
         long ExchTimeMs,
         long RecvTimeMs,
@@ -20,7 +20,7 @@
 
     // 호가 (depth면 여러 단계, bookTicker면 1단계만 들어감)
     public sealed record OrderBookEvent(
-        string Exchange,
+        Exchange Exchange,
         string Symbol, 
         long ExchTimeMs, 
         long RecvTimeMs,
@@ -29,7 +29,7 @@
 
     // 캔들 ← 새로 추가
     public sealed record CandleEvent(
-        string Exchange, 
+         Exchange Exchange,
         string Symbol, 
         long ExchTimeMs,
         long RecvTimeMs,
@@ -44,7 +44,7 @@
 
     // 티커
     public sealed record TickerEvent(
-        string Exchange,
+       Exchange Exchange,
         string Symbol,
         long ExchTimeMs,
         long RecvTimeMs,
@@ -56,7 +56,8 @@
         : MarketEvent(Exchange, Symbol, ExchTimeMs, RecvTimeMs);
 
     public readonly record struct Level(decimal Price, decimal Qty);   // 호가 한 단계
-    public enum Side { Buy, Sell }
+    // 페결, 판매 
+    public enum Side { Buy, Sell, None }
     // 비트 코인 종류 구분
     public enum Exchange { Upbit, Binance }
 }

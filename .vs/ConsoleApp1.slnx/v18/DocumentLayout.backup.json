@@ -3,28 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\singleton\\symboldirectory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\singleton\\symboldirectory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\singleton\\marketbothostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\singleton\\marketbothostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\models\\datatype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\models\\datatype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\parsing\\parsing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\parsing\\parsing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\adoator\\upbitefeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\adoator\\upbitefeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\adoator\\websocketfeedbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\adoator\\websocketfeedbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\adoator\\binancefeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\adoator\\binancefeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\adoator\\websocketfeedbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\adoator\\websocketfeedbase.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\models\\datatype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\models\\datatype.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\singleton\\symboldirectory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\singleton\\symboldirectory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\singleton\\marketbothostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|solutionrelative:consoleapp1\\singleton\\marketbothostedservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{5B68813F-23C2-8DF2-1B1F-9033A2893F62}|ConsoleApp1\\ConsoleApp1.csproj|c:\\users\\dev\\documents\\github\\real-time-financial-tick-data-processing-console-engine\\consoleapp1\\consoleapp1.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
@@ -42,76 +46,89 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
+              "Title": "Parsing.cs",
+              "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Parsing\\Parsing.cs",
+              "RelativeDocumentMoniker": "ConsoleApp1\\Parsing\\Parsing.cs",
+              "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Parsing\\Parsing.cs",
+              "RelativeToolTip": "ConsoleApp1\\Parsing\\Parsing.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-01T06:05:32.753Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "BinanceFeed.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\BinanceFeed.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\Adoator\\BinanceFeed.cs",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\BinanceFeed.cs",
               "RelativeToolTip": "ConsoleApp1\\Adoator\\BinanceFeed.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-30T08:35:39.741Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "UpbiteFeed.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\UpbiteFeed.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\Adoator\\UpbiteFeed.cs",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\UpbiteFeed.cs",
               "RelativeToolTip": "ConsoleApp1\\Adoator\\UpbiteFeed.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAhwBwAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-30T08:34:03.387Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "DataType.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Models\\DataType.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\Models\\DataType.cs",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Models\\DataType.cs",
               "RelativeToolTip": "ConsoleApp1\\Models\\DataType.cs",
-              "ViewState": "AgIAACkAAAAAAAAAAAAQwDsAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAACkAAAAAAAAAAAAQwDoAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-30T06:46:39.84Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 2,
               "Title": "WebSocketFeedBase.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\WebSocketFeedBase.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\Adoator\\WebSocketFeedBase.cs",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Adoator\\WebSocketFeedBase.cs",
               "RelativeToolTip": "ConsoleApp1\\Adoator\\WebSocketFeedBase.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-30T05:57:31.947Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "SymbolDirectory.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\singleton\\SymbolDirectory.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\singleton\\SymbolDirectory.cs",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\singleton\\SymbolDirectory.cs",
               "RelativeToolTip": "ConsoleApp1\\singleton\\SymbolDirectory.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAACUAAAAAAAAAAAAgwAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-30T00:53:29.335Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "MarketBotHostedService.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\singleton\\MarketBotHostedService.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\singleton\\MarketBotHostedService.cs",
@@ -119,25 +136,23 @@
               "RelativeToolTip": "ConsoleApp1\\singleton\\MarketBotHostedService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T00:30:10.767Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T00:30:10.767Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "ConsoleApp1",
+              "DocumentIndex": 7,
+              "Title": "ConsoleApp1.csproj",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\ConsoleApp1.csproj",
               "RelativeDocumentMoniker": "ConsoleApp1\\ConsoleApp1.csproj",
               "ToolTip": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\ConsoleApp1.csproj",
               "RelativeToolTip": "ConsoleApp1\\ConsoleApp1.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-09-30T00:15:57.142Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T00:15:57.142Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\dev\\Documents\\GitHub\\Real-time-Financial-Tick-Data-Processing-Console-Engine\\ConsoleApp1\\Program.cs",
               "RelativeDocumentMoniker": "ConsoleApp1\\Program.cs",
@@ -145,8 +160,7 @@
               "RelativeToolTip": "ConsoleApp1\\Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-30T00:15:43.031Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-30T00:15:43.031Z"
             }
           ]
         }

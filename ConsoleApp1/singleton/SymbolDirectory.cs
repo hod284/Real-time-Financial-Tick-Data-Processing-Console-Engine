@@ -40,11 +40,11 @@ namespace ConsoleApp1.singleton
         {
              public bool Equals((Exchange, string) a, (Exchange, string) b)
              {
-                a.Item1 == b.Item1 && string.Equals(a.Item2, b.Item2, StringComparison.OrdinalIgnoreCase);
+               return a.Item1 == b.Item1 && string.Equals(a.Item2, b.Item2, StringComparison.OrdinalIgnoreCase);
              }
             public int GetHashCode((Exchange, string) k) 
             {
-              HashCode.Combine(k.Item1, StringComparer.OrdinalIgnoreCase.GetHashCode(k.Item2));
+               return  HashCode.Combine(k.Item1, StringComparer.OrdinalIgnoreCase.GetHashCode(k.Item2));
             }
         }
 

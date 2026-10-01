@@ -17,7 +17,6 @@
     <Folder Include="Events\" />
     <Folder Include="Meessaging\" />
     <Folder Include="presentation\" />
-    <Folder Include="Parsing\" />
   </ItemGroup>
 
 </Project>

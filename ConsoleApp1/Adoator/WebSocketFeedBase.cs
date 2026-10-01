@@ -17,7 +17,7 @@ namespace ConsoleApp1.Adoator
         {
             return Task.CompletedTask;
         }
-        protected abstract void OnMessage(ReadOnlyMemory<byte> payload, long recvMs);
+        protected abstract void OnMessage(ReadOnlySpan<byte>  payload, long recvMs);
 
         protected void Emite(MarketEvent mark)
         {
