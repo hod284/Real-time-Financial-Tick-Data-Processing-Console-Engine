@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Diagnostics.SymbolStore;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -59,8 +60,6 @@ namespace ConsoleApp1.Parsing
                     trade_volume = tv.GetDecimal()!;
                 if (va.TryGetProperty("ask_bid", out var ab))
                     side = ab.GetString() == "BID" ? Side.Buy : Side.Sell;
-
-                va.GetProperty("s").GetString();
                 trade = new TradeEvent(
                 Exchange: ex,
                 Symbol: symbol,          // "KRW-BTC"
@@ -72,34 +71,97 @@ namespace ConsoleApp1.Parsing
             }
             return trade;
         }
+
         public static OrderBookEvent orderBookEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
         {
             using var re = reader(message);
             OrderBookEvent orderBook;
             if (Exchange.Binance == ex)
             {
-                if (!re.RootElement.TryGetProperty("stream", out var s))
+                if (re.RootElement.TryGetProperty("stream", out var s))
                 {
-                   
+
                     var stream = s.GetString()!;
                     var symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
+                    var levels = new Level[s.GetProperty("bids").GetArrayLength()];
+                    int i = 0;
+                    foreach (var lv in s.GetProperty("bids").EnumerateArray())
+                    {
+                        levels[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : -1, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
+                    }
+                    var asks = new Level[s.GetProperty("asks").GetArrayLength()];
+                    i = 0;
+                    foreach (var lv in s.GetProperty("asks").EnumerateArray())
+                    {
+                        asks[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : -1, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
+                    }
                     orderBook = new OrderBookEvent(
                         Exchange: ex,
                         Symbol: symbol,
                         ExchTimeMs: recvMs,   // 교환 시간을 따로 안주어서 받는시간만 줌
                         RecvTimeMs: recvMs,   //
+                        Bids: levels,
+                        Asks: asks
                         );
                 }
                 else
-                { 
+                {
+                    orderBook = new OrderBookEvent(
+                          Exchange: ex,
+                          Symbol: "",
+                          ExchTimeMs: recvMs,   // 교환 시간을 따로 안주어서 받는시간만 줌
+                          RecvTimeMs: recvMs,   //
+                          Bids: null,
+                          Asks: null
+                          );
                 }
             }
             else
             {
-                  
+                int i = 0;
+               string sy = string.Empty;
+                long time = 0;
+                if (re.RootElement.TryGetProperty("orderbook_units", out var s))
+                {
+                    var units = s;
+                    int n = units.GetArrayLength();
+                    var bids = new Level[n];
+                    var asks = new Level[n];
+                    foreach (var u in units.EnumerateArray())
+                    {
+                        bids[i] = new Level(u.GetProperty("bid_price").GetDecimal(), u.GetProperty("bid_size").GetDecimal());
+                        asks[i] = new Level(u.GetProperty("ask_price").GetDecimal(), u.GetProperty("ask_size").GetDecimal());
+                        i++;
+                    }
+                    if (s.TryGetProperty("code", out var st))
+                        sy = st.GetString()!;
+                    if (s.TryGetProperty("timestamp", out var ti))
+                        time = ti.GetInt64();
+                    orderBook = new OrderBookEvent(
+                        Exchange: ex,
+                        Symbol: sy,
+                        ExchTimeMs: time,
+                        RecvTimeMs: recvMs,
+                         Bids: bids,
+                          Asks: asks);
+                }
+                else
+                {
+                    orderBook = new OrderBookEvent(
+                           Exchange: ex,
+                           Symbol: sy,
+                           ExchTimeMs: time,
+                           RecvTimeMs: recvMs,
+                            Bids: null,
+                             Asks: null);
+                }
+
             }
             return orderBook;
         }
+
+
+         public static 
     }
    
    

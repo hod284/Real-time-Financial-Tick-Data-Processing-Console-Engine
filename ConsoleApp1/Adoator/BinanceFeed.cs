@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleApp1.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -17,7 +18,9 @@ namespace ConsoleApp1.Adoator
 
         protected override void OnMessage(ReadOnlySpan<byte> payload, long recvMs)
         {
-            throw new NotImplementedException();
+            Emite(Parser.Parsetrade(Models.Exchange.Binance, payload, recvMs));
+            Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
         }
+    
     }
 }

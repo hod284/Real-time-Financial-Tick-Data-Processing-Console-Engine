@@ -20,13 +20,16 @@ namespace ConsoleApp1.Adoator
             new { type = "orderbook", codes },
             new { type = "ticker",    codes },
             new { type = "candle",    codes },
-          });
+             });
             return ws.SendAsync(Encoding.UTF8.GetBytes(json), WebSocketMessageType.Text, true, ct);
         }
 
         protected override void OnMessage(ReadOnlySpan<byte> payload, long recvMs)
         {
-             Emite(Parser.Parsetrade(Models.Exchange.Upbit, payload, recvMs));
+        
+
+            Emite(Parser.Parsetrade(Models.Exchange.Upbit, payload, recvMs));
+            Emite(Parser.orderBookEvent(Models.Exchange.Upbit, payload, recvMs));
         }
     }
 }
