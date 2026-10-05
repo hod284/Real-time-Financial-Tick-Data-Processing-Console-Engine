@@ -18,8 +18,16 @@ namespace ConsoleApp1.Adoator
 
         protected override void OnMessage(ReadOnlySpan<byte> payload, long recvMs)
         {
-            Emite(Parser.Parsetrade(Models.Exchange.Binance, payload, recvMs));
-            Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
+            var reader = new Utf8JsonReader(message);
+            using var doc = JsonDocument.ParseValue(ref reader);
+            if (doc.TryGetProperty("stream", out var s)) 
+            {
+                var stream = s.GetString()!; 
+                 if(stream.EndsWith("@aggTrade")) 
+                     Emite(Parser.Parsetrade(Models.Exchange.Binance, payload, recvMs));
+                 else if(stream.Contains("@depth"))    
+               Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
+            }
         }
     
     }

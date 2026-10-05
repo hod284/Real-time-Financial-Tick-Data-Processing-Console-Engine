@@ -26,10 +26,20 @@ namespace ConsoleApp1.Adoator
 
         protected override void OnMessage(ReadOnlySpan<byte> payload, long recvMs)
         {
-        
-
-            Emite(Parser.Parsetrade(Models.Exchange.Upbit, payload, recvMs));
-            Emite(Parser.orderBookEvent(Models.Exchange.Upbit, payload, recvMs));
+                var reader = new Utf8JsonReader(message);
+            using var doc = JsonDocument.ParseValue(ref reader);
+           if(doc.RootElement.TryGetProperty("type", out var t))
+           {
+            switch (t.GetString())
+            {
+                case "trade":
+               Emite(Parser.Parsetrade(Models.Exchange.Upbit, payload, recvMs));
+               break;
+               case "orderbook":
+               Emite(Parser.orderBookEvent(Models.Exchange.Upbit, payload, recvMs));
+               break;
+            }
+           }
         }
     }
 }

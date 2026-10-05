@@ -38,10 +38,10 @@ namespace ConsoleApp1.Parsing
                     trade = new TradeEvent(                                 // ★ 여기서 틀에 값을 채워 객체 생성
                               Exchange: ex,
                               Symbol: "",                 // "BTCUSDT"
-                              ExchTimeMs: -1,                   // 체결 시각
+                              ExchTimeMs: 0,                   // 체결 시각
                               RecvTimeMs: recvMs,                                           // 받은시각
-                              Price: -1,  // "65432.10" → 65432.10
-                              Qty: -1,  // "0.012"    → 0.012
+                              Price: 0,  // "65432.10" → 65432.10
+                              Qty: 0,  // "0.012"    → 0.012
                               Side: Side.None);
                 }
             }
@@ -75,25 +75,28 @@ namespace ConsoleApp1.Parsing
         public static OrderBookEvent orderBookEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
         {
             using var re = reader(message);
+            if(re.TryGetProperty("stream", out var st))
+            {
+                    var stream = st.GetString()!;
+                    var symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
+            }
             OrderBookEvent orderBook;
             if (Exchange.Binance == ex)
             {
-                if (re.RootElement.TryGetProperty("stream", out var s))
+                if (re.RootElement.TryGetProperty("data", out var s))
                 {
-
-                    var stream = s.GetString()!;
-                    var symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
+                    
                     var levels = new Level[s.GetProperty("bids").GetArrayLength()];
                     int i = 0;
                     foreach (var lv in s.GetProperty("bids").EnumerateArray())
                     {
-                        levels[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : -1, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
+                        levels[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : 0, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
                     }
                     var asks = new Level[s.GetProperty("asks").GetArrayLength()];
                     i = 0;
                     foreach (var lv in s.GetProperty("asks").EnumerateArray())
                     {
-                        asks[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : -1, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
+                        asks[i++] = new Level(decimal.TryParse(lv[0].GetString(), out var price) ? price : 0, decimal.TryParse(lv[1].GetString()!, out var qty) ? qty : -1);
                     }
                     orderBook = new OrderBookEvent(
                         Exchange: ex,
@@ -159,9 +162,17 @@ namespace ConsoleApp1.Parsing
             }
             return orderBook;
         }
+        
+        public static CandleEvent candleEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
+        {
 
+        }
+        
+        public static TickerEvent tickerEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
+        {
 
-         public static 
+        }
+
     }
    
    
