@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace ConsoleApp1.Adoator
 {
@@ -18,15 +19,19 @@ namespace ConsoleApp1.Adoator
 
         protected override void OnMessage(ReadOnlySpan<byte> payload, long recvMs)
         {
-            var reader = new Utf8JsonReader(message);
+            var reader = new Utf8JsonReader(payload);
             using var doc = JsonDocument.ParseValue(ref reader);
-            if (doc.TryGetProperty("stream", out var s)) 
+            if (doc.RootElement.TryGetProperty("stream", out var s)) 
             {
                 var stream = s.GetString()!; 
                  if(stream.EndsWith("@aggTrade")) 
                      Emite(Parser.Parsetrade(Models.Exchange.Binance, payload, recvMs));
                  else if(stream.Contains("@depth"))    
-               Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
+                     Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
+               else  if (stream.Contains("@kline_"))
+                    Emite(Parser.candleEvent(Models.Exchange.Binance, payload, recvMs));
+                else if (stream.EndsWith("@ticker"))
+                    Emite(Parser.tickerEvent(Models.Exchange.Binance, payload, recvMs));
             }
         }
     

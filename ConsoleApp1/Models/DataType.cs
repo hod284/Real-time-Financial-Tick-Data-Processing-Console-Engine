@@ -59,5 +59,5 @@
     // 페결, 판매 
     public enum Side { Buy, Sell, None }
     // 비트 코인 종류 구분
-    public enum Exchange { Upbit, Binance }
+    public enum Exchange { Upbit, Binance ,None }
 }

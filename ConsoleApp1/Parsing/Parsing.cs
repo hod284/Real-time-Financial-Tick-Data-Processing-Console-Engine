@@ -49,8 +49,8 @@ namespace ConsoleApp1.Parsing
             {
                 var va = re.RootElement;
                 string symbol = string.Empty;
-                decimal trade_price = decimal.MinusOne;
-                decimal trade_volume = decimal.MinusOne;
+                decimal trade_price = 0;
+                decimal trade_volume = 0;
                 Side side = Side.None;
                 if (va.TryGetProperty("code", out var sy))
                     symbol = sy.GetString()!;
@@ -75,10 +75,11 @@ namespace ConsoleApp1.Parsing
         public static OrderBookEvent orderBookEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
         {
             using var re = reader(message);
-            if(re.TryGetProperty("stream", out var st))
+            string symbol = string.Empty;
+            if(re.RootElement.TryGetProperty("stream", out var sta))
             {
-                    var stream = st.GetString()!;
-                    var symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
+                    var stream = sta.GetString()!;
+                     symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
             }
             OrderBookEvent orderBook;
             if (Exchange.Binance == ex)
@@ -165,12 +166,131 @@ namespace ConsoleApp1.Parsing
         
         public static CandleEvent candleEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
         {
-
+            using var re = reader(message);
+            Exchange exchange = Exchange.None;
+            string symbol = string.Empty;
+            long exchangetime = 0;
+            string interval = string.Empty;
+            long opentimeMs = 0;
+            decimal open = 0;
+            decimal high = 0;
+            decimal low = 0;
+            decimal close = 0;
+            decimal volume = 0;
+            bool isclosed = true;
+            if (Exchange.Binance == ex)
+            {
+                exchange = Exchange.Binance;
+                if (re.RootElement.TryGetProperty("data", out var d))
+                {
+                    symbol = d.GetProperty("s").GetString()!;
+                    exchangetime  =d.GetProperty("E").GetInt64();
+                    if (d.TryGetProperty("k", out var k))
+                    {
+                        interval = k.GetProperty("i").GetString()!;   // "1m"
+                        opentimeMs = k.GetProperty("t").GetInt64();
+                        open = k.GetProperty("o").GetDecimal();
+                        high = k.GetProperty("h").GetDecimal();
+                        low = k.GetProperty("l").GetDecimal();
+                        close = k.GetProperty("c").GetDecimal();
+                        volume = k.GetProperty("v").GetDecimal();
+                        isclosed = k.GetProperty("x").GetBoolean();     // 바이낸스는 마감 플래그가 있음
+                    }
+                }
+            }
+            else
+            {
+                exchange = Exchange.Upbit;
+                var ds = re.RootElement;
+                if (ds.TryGetProperty("code", out var s))
+                    symbol = s.GetString()!;
+                if (ds.TryGetProperty("timestamp", out var time))
+                    exchangetime = time.GetInt64();
+                if (ds.TryGetProperty("candle_date_time_utc", out var optime))
+                    opentimeMs = DateTimeOffset.Parse(optime.GetString() + "Z", CultureInfo.InvariantCulture).ToUnixTimeMilliseconds();
+                if (ds.TryGetProperty("opening_price", out var opprice))
+                    open = opprice.GetDecimal();
+                if (ds.TryGetProperty("high_price", out var hp))
+                    high = hp.GetDecimal();
+                if (ds.TryGetProperty("low_price", out var lp))
+                    low = lp.GetDecimal();
+                if (ds.TryGetProperty("trade_pric", out var tp))
+                    close = tp.GetDecimal();
+                if (ds.TryGetProperty("candle_acc_trade_volume", out var vo))
+                    volume = vo.GetDecimal();
+                interval = "1m";
+                isclosed = false;
+            }
+            return   new CandleEvent(
+                      Exchange: exchange,
+                      Symbol: symbol,
+                      ExchTimeMs: exchangetime,
+                      RecvTimeMs: recvMs,
+                       Interval: interval,   // "1m"
+                       OpenTimeMs: opentimeMs,
+                       Open: open,
+                       High: high,
+                       Low: low,
+                       Close: close,
+                       Volume: volume,
+                       IsClosed: isclosed);     // 바이낸스는 마감 플래그가 있음
         }
         
         public static TickerEvent tickerEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
         {
-
+            using var re = reader(message);
+            Exchange exchange = Exchange.None;
+            string symbol = string.Empty;
+            long exchangtime = 0;
+            decimal lastprice = 0;
+            double changerate24 = 0;
+            decimal volum24 = 0;
+            decimal high24 = 0;
+            decimal low24 = 0;
+            if (Exchange.Binance == ex)
+            {
+                exchange = Exchange.Binance;
+                if (re.RootElement.TryGetProperty("data", out var d))
+                {
+                     symbol = d.GetProperty("s").GetString()!;
+                    exchangtime = d.GetProperty("E").GetInt64();
+                    lastprice = d.GetProperty("c").GetDecimal();
+                    changerate24 = (double)d.GetProperty("P").GetDecimal()/100;
+                    volum24 = d.GetProperty("v").GetDecimal();
+                     high24 = d.GetProperty("h").GetDecimal();
+                    low24 = d.GetProperty("l").GetDecimal();
+                }
+            }
+            else
+            {
+                exchange = Exchange.Upbit;
+                var r = re.RootElement;
+                if (r.TryGetProperty("code", out var sy))
+                    symbol = sy.GetString()!;
+                if (r.TryGetProperty("timestamp", out var os))
+                         exchangtime = os.GetInt64();
+                if (r.TryGetProperty("trade_price",out var tp ))
+                    lastprice =tp.GetDecimal();
+                if (r.TryGetProperty("signed_change_rate", out var scr))// 이미 비율(0.05 = 5%))   
+                    changerate24 = scr.GetDouble();
+                if(r.TryGetProperty("acc_trade_volume_24h", out var atv))
+                    volum24 = atv.GetDecimal();
+                if (r.TryGetProperty("high_price", out var h))   // 주의: 당일(KST 09시 기준) 고가
+                    high24 = h.GetDecimal();
+                if (r.TryGetProperty("low_price", out var lo))
+                    low24 = lo.GetDecimal();
+            }
+            return  new TickerEvent(
+                  Exchange:exchange,
+                  Symbol: symbol,
+                  ExchTimeMs: exchangtime,
+                  RecvTimeMs:recvMs,
+                  LastPrice: lastprice,
+                  ChangeRate24h: changerate24,
+                  Volume24h: volum24,
+                  High24h:high24,
+                  Low24h:low24
+                );
         }
 
     }
