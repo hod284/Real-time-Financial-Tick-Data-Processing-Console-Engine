@@ -1,10 +1,5 @@
 ﻿using ConsoleApp1.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Diagnostics.SymbolStore;
 using System.Globalization;
-using System.Text;
 using System.Text.Json;
 namespace ConsoleApp1.Parsing
 {
@@ -125,6 +120,10 @@ namespace ConsoleApp1.Parsing
                 int i = 0;
                string sy = string.Empty;
                 long time = 0;
+                if (re.RootElement.TryGetProperty("code", out var st))
+                    sy = st.GetString()!;
+                if (re.RootElement.TryGetProperty("timestamp", out var ti))
+                    time = ti.GetInt64();
                 if (re.RootElement.TryGetProperty("orderbook_units", out var s))
                 {
                     var units = s;
@@ -137,10 +136,6 @@ namespace ConsoleApp1.Parsing
                         asks[i] = new Level(u.GetProperty("ask_price").GetDecimal(), u.GetProperty("ask_size").GetDecimal());
                         i++;
                     }
-                    if (s.TryGetProperty("code", out var st))
-                        sy = st.GetString()!;
-                    if (s.TryGetProperty("timestamp", out var ti))
-                        time = ti.GetInt64();
                     orderBook = new OrderBookEvent(
                         Exchange: ex,
                         Symbol: sy,
@@ -189,11 +184,11 @@ namespace ConsoleApp1.Parsing
                     {
                         interval = k.GetProperty("i").GetString()!;   // "1m"
                         opentimeMs = k.GetProperty("t").GetInt64();
-                        open = k.GetProperty("o").GetDecimal();
-                        high = k.GetProperty("h").GetDecimal();
-                        low = k.GetProperty("l").GetDecimal();
-                        close = k.GetProperty("c").GetDecimal();
-                        volume = k.GetProperty("v").GetDecimal();
+                        open = decimal.Parse(k.GetProperty("o").GetString()!,CultureInfo.InvariantCulture);
+                        high = decimal.Parse(k.GetProperty("h").GetString()!, CultureInfo.InvariantCulture);
+                        low = decimal.Parse(k.GetProperty("l").GetString()!, CultureInfo.InvariantCulture);
+                        close = decimal.Parse(k.GetProperty("c").GetString()!, CultureInfo.InvariantCulture);
+                        volume = decimal.Parse(k.GetProperty("v").GetString()!, CultureInfo.InvariantCulture);
                         isclosed = k.GetProperty("x").GetBoolean();     // 바이낸스는 마감 플래그가 있음
                     }
                 }
@@ -214,7 +209,7 @@ namespace ConsoleApp1.Parsing
                     high = hp.GetDecimal();
                 if (ds.TryGetProperty("low_price", out var lp))
                     low = lp.GetDecimal();
-                if (ds.TryGetProperty("trade_pric", out var tp))
+                if (ds.TryGetProperty("trade_price", out var tp))
                     close = tp.GetDecimal();
                 if (ds.TryGetProperty("candle_acc_trade_volume", out var vo))
                     volume = vo.GetDecimal();
@@ -254,11 +249,11 @@ namespace ConsoleApp1.Parsing
                 {
                      symbol = d.GetProperty("s").GetString()!;
                     exchangtime = d.GetProperty("E").GetInt64();
-                    lastprice = d.GetProperty("c").GetDecimal();
-                    changerate24 = (double)d.GetProperty("P").GetDecimal()/100;
-                    volum24 = d.GetProperty("v").GetDecimal();
-                     high24 = d.GetProperty("h").GetDecimal();
-                    low24 = d.GetProperty("l").GetDecimal();
+                    lastprice = decimal.Parse(d.GetProperty("c").GetString()!, CultureInfo.InvariantCulture);
+                    changerate24 = (double)decimal.Parse(d.GetProperty("P").GetString()!, CultureInfo.InvariantCulture) / 100;
+                    volum24 = decimal.Parse(d.GetProperty("v").GetString()! ,CultureInfo.InvariantCulture);
+                    high24 = decimal.Parse(d.GetProperty("h").GetString()!, CultureInfo.InvariantCulture);
+                    low24 = decimal.Parse(d.GetProperty("l").GetString()!, CultureInfo.InvariantCulture);
                 }
             }
             else

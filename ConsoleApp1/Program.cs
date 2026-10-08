@@ -7,7 +7,12 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+          
+
+
             var bulider = Host.CreateDefaultBuilder(args);
+
+
         }
     }
 }

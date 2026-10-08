@@ -1,3 +1,11 @@
 {
+  "Market": {
+    "DbPath": "",
+    "DbWriter": {
+      "FlushIntervalMs": 1000,
+      "MaxBatchSize": 500
+    }
+  }
+
 
 }

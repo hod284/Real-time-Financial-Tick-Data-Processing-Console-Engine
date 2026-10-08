@@ -60,4 +60,17 @@
     public enum Side { Buy, Sell, None }
     // 비트 코인 종류 구분
     public enum Exchange { Upbit, Binance ,None }
+    public sealed record MarketOptions
+    {
+        public string DbPath { get; init; } 
+        public DbWriterOptions DbWriter { get; init; } = new();
+    }
+
+    public sealed record DbWriterOptions
+    {
+        public int FlushIntervalMs { get; init; } 
+        public int MaxBatchSize { get; init; }
+    }
+
+
 }
