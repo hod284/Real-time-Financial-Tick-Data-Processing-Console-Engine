@@ -5,19 +5,13 @@ namespace ConsoleApp1.Parsing
 {
     public static class Parser
     {
-        private static JsonDocument reader(ReadOnlySpan<byte> message)
+        public static TradeEvent Parsetrade(Exchange ex, JsonDocument message, long recvMs)
         {
-            var recorde = new Utf8JsonReader(message);
-           return   JsonDocument.ParseValue(ref recorde);
-           
-        }
-        public static TradeEvent Parsetrade(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
-        {
-            using var re = reader(message);
+            
             TradeEvent trade;
             if (Exchange.Binance == ex)
             {
-                if (re.RootElement.TryGetProperty("data", out var va))
+                if (message.RootElement.TryGetProperty("data", out var va))
                 {
                     trade = new TradeEvent(                                 // ★ 여기서 틀에 값을 채워 객체 생성
                               Exchange: ex,
@@ -26,7 +20,8 @@ namespace ConsoleApp1.Parsing
                               RecvTimeMs: recvMs,                                           // 받은시각
                               Price: decimal.Parse(va.GetProperty("p").GetString()!, CultureInfo.InvariantCulture),  // "65432.10" → 65432.10
                               Qty: decimal.Parse(va.GetProperty("q").GetString()!, CultureInfo.InvariantCulture),  // "0.012"    → 0.012
-                              Side: va.GetProperty("m").GetBoolean() ? Side.Sell : Side.Buy);
+                              Side: va.GetProperty("m").GetBoolean() ? Side.Sell : Side.Buy,
+                             TradeId:  va.GetProperty("a").GetInt64());
                 }
                 else
                 {
@@ -37,16 +32,20 @@ namespace ConsoleApp1.Parsing
                               RecvTimeMs: recvMs,                                           // 받은시각
                               Price: 0,  // "65432.10" → 65432.10
                               Qty: 0,  // "0.012"    → 0.012
-                              Side: Side.None);
+                              Side: Side.None,
+                              TradeId:0);
                 }
             }
             else
             {
-                var va = re.RootElement;
+                var va = message.RootElement;
                 string symbol = string.Empty;
                 decimal trade_price = 0;
                 decimal trade_volume = 0;
                 Side side = Side.None;
+                long tradeId = 0;
+                if (va.TryGetProperty("sequential_id", out var sq))
+                    tradeId = sq.GetInt64();
                 if (va.TryGetProperty("code", out var sy))
                     symbol = sy.GetString()!;
                 if (va.TryGetProperty("trade_price", out var tp))
@@ -62,16 +61,16 @@ namespace ConsoleApp1.Parsing
                 RecvTimeMs: recvMs,                                       // 받은시각
                 Price: trade_price,   // 숫자로 옴 → 바로 읽음
                 Qty: trade_volume,
-                Side: side);
+                Side: side,
+                TradeId:tradeId);
             }
             return trade;
         }
 
-        public static OrderBookEvent orderBookEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
+        public static OrderBookEvent orderBookEvent(Exchange ex, JsonDocument  message, long recvMs)
         {
-            using var re = reader(message);
             string symbol = string.Empty;
-            if(re.RootElement.TryGetProperty("stream", out var sta))
+            if(message.RootElement.TryGetProperty("stream", out var sta))
             {
                     var stream = sta.GetString()!;
                      symbol = stream[..stream.IndexOf('@')].ToUpperInvariant();   // "BTCUSDT"
@@ -79,7 +78,7 @@ namespace ConsoleApp1.Parsing
             OrderBookEvent orderBook;
             if (Exchange.Binance == ex)
             {
-                if (re.RootElement.TryGetProperty("data", out var s))
+                if (message.RootElement.TryGetProperty("data", out var s))
                 {
                     
                     var levels = new Level[s.GetProperty("bids").GetArrayLength()];
@@ -117,14 +116,15 @@ namespace ConsoleApp1.Parsing
             }
             else
             {
+                  var re = message.RootElement;
                 int i = 0;
                string sy = string.Empty;
                 long time = 0;
-                if (re.RootElement.TryGetProperty("code", out var st))
+                if (re.TryGetProperty("code", out var st))
                     sy = st.GetString()!;
-                if (re.RootElement.TryGetProperty("timestamp", out var ti))
+                if (re.TryGetProperty("timestamp", out var ti))
                     time = ti.GetInt64();
-                if (re.RootElement.TryGetProperty("orderbook_units", out var s))
+                if (re.TryGetProperty("orderbook_units", out var s))
                 {
                     var units = s;
                     int n = units.GetArrayLength();
@@ -159,9 +159,8 @@ namespace ConsoleApp1.Parsing
             return orderBook;
         }
         
-        public static CandleEvent candleEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
+        public static CandleEvent candleEvent(Exchange ex, JsonDocument  message, long recvMs)
         {
-            using var re = reader(message);
             Exchange exchange = Exchange.None;
             string symbol = string.Empty;
             long exchangetime = 0;
@@ -176,7 +175,7 @@ namespace ConsoleApp1.Parsing
             if (Exchange.Binance == ex)
             {
                 exchange = Exchange.Binance;
-                if (re.RootElement.TryGetProperty("data", out var d))
+                if (message.RootElement.TryGetProperty("data", out var d))
                 {
                     symbol = d.GetProperty("s").GetString()!;
                     exchangetime  =d.GetProperty("E").GetInt64();
@@ -196,7 +195,7 @@ namespace ConsoleApp1.Parsing
             else
             {
                 exchange = Exchange.Upbit;
-                var ds = re.RootElement;
+                var ds = message.RootElement;
                 if (ds.TryGetProperty("code", out var s))
                     symbol = s.GetString()!;
                 if (ds.TryGetProperty("timestamp", out var time))
@@ -231,9 +230,9 @@ namespace ConsoleApp1.Parsing
                        IsClosed: isclosed);     // 바이낸스는 마감 플래그가 있음
         }
         
-        public static TickerEvent tickerEvent(Exchange ex, ReadOnlySpan<byte> message, long recvMs)
+        public static TickerEvent tickerEvent(Exchange ex, JsonDocument message, long recvMs)
         {
-            using var re = reader(message);
+        
             Exchange exchange = Exchange.None;
             string symbol = string.Empty;
             long exchangtime = 0;
@@ -245,7 +244,7 @@ namespace ConsoleApp1.Parsing
             if (Exchange.Binance == ex)
             {
                 exchange = Exchange.Binance;
-                if (re.RootElement.TryGetProperty("data", out var d))
+                if (message.RootElement.TryGetProperty("data", out var d))
                 {
                      symbol = d.GetProperty("s").GetString()!;
                     exchangtime = d.GetProperty("E").GetInt64();
@@ -259,7 +258,7 @@ namespace ConsoleApp1.Parsing
             else
             {
                 exchange = Exchange.Upbit;
-                var r = re.RootElement;
+                var r = message.RootElement;
                 if (r.TryGetProperty("code", out var sy))
                     symbol = sy.GetString()!;
                 if (r.TryGetProperty("timestamp", out var os))
@@ -289,6 +288,4 @@ namespace ConsoleApp1.Parsing
         }
 
     }
-   
-   
 }

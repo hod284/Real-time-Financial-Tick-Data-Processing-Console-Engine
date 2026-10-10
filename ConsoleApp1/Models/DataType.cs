@@ -16,7 +16,8 @@
         long RecvTimeMs,
         decimal Price,
         decimal Qty, 
-        Side Side) : MarketEvent(Exchange, Symbol, ExchTimeMs, RecvTimeMs);
+        Side Side,
+         long TradeId) : MarketEvent(Exchange, Symbol, ExchTimeMs, RecvTimeMs);
 
     // 호가 (depth면 여러 단계, bookTicker면 1단계만 들어감)
     public sealed record OrderBookEvent(
@@ -55,6 +56,15 @@
         decimal Low24h)
         : MarketEvent(Exchange, Symbol, ExchTimeMs, RecvTimeMs);
 
+     public sealed record Alert(
+        Exchange Exchange, 
+        string Symbol,
+        string Rule,
+        string Message,
+        double Value, 
+        double Threshold, 
+        long TimeMs); 
+    
     public readonly record struct Level(decimal Price, decimal Qty);   // 호가 한 단계
     // 페결, 판매 
     public enum Side { Buy, Sell, None }

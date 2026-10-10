@@ -25,13 +25,13 @@ namespace ConsoleApp1.Adoator
             {
                 var stream = s.GetString()!; 
                  if(stream.EndsWith("@aggTrade")) 
-                     Emite(Parser.Parsetrade(Models.Exchange.Binance, payload, recvMs));
+                     Emite(Parser.Parsetrade(Models.Exchange.Binance, doc, recvMs));
                  else if(stream.Contains("@depth"))    
-                     Emite(Parser.orderBookEvent(Models.Exchange.Binance, payload, recvMs));
+                     Emite(Parser.orderBookEvent(Models.Exchange.Binance, doc, recvMs));
                else  if (stream.Contains("@kline_"))
-                    Emite(Parser.candleEvent(Models.Exchange.Binance, payload, recvMs));
+                    Emite(Parser.candleEvent(Models.Exchange.Binance, doc, recvMs));
                 else if (stream.EndsWith("@ticker"))
-                    Emite(Parser.tickerEvent(Models.Exchange.Binance, payload, recvMs));
+                    Emite(Parser.tickerEvent(Models.Exchange.Binance, doc, recvMs));
             }
         }
     

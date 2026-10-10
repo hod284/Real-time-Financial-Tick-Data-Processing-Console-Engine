@@ -33,16 +33,16 @@ namespace ConsoleApp1.Adoator
                switch (t.GetString())
                {
                      case "trade":
-                     Emite(Parser.Parsetrade(Models.Exchange.Upbit, payload, recvMs));
+                     Emite(Parser.Parsetrade(Models.Exchange.Upbit, doc, recvMs));
                      break;
                      case "orderbook":
-                     Emite(Parser.orderBookEvent(Models.Exchange.Upbit, payload, recvMs));
+                     Emite(Parser.orderBookEvent(Models.Exchange.Upbit, doc, recvMs));
                      break;
                      case "candle.1m":
-                     Emite(Parser.candleEvent(Models.Exchange.Upbit, payload, recvMs));
+                     Emite(Parser.candleEvent(Models.Exchange.Upbit,doc, recvMs));
                      break;
                      case "ticker":
-                     Emite(Parser.tickerEvent(Models.Exchange.Upbit, payload, recvMs));
+                     Emite(Parser.tickerEvent(Models.Exchange.Upbit,doc, recvMs));
                      break;
                 }
            }
