@@ -7,7 +7,7 @@ using System.Threading.Channels;
 namespace ConsoleApp1.Storage
 {
     //  [디스패처] --Enqueue()--> [큐(Channel)] --1초마다 꺼냄--> [트랜잭션 1개로 INSERT] --> SQLite
-    public sealed class DbWriter
+    public sealed class DbWriter: IAlertObserver        // ← 추가
     {
         // object 큐: 체결/캔들/티커/알림 등 타입이 섞여 들어옴
         private readonly Channel<object> _queue =
@@ -55,6 +55,10 @@ namespace ConsoleApp1.Storage
         public void Enqueue(Alert alert) 
         {
              _queue.Writer.TryWrite(alert);
+        }
+        public void OnAlert(Alert alert) 
+        {
+             Enqueue(alert);                  // ← 추가: 인터페이스 연결
         }
         // 종료 신호: 더 이상 안 넣음 → RunAsync가 남은 거 저장하고 끝남
         public void Complete() 
