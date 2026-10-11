@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Channels;
+using ConsoleApp1.Models;
+using Dapper;
+using System.Data;
 
 namespace ConsoleApp1.Storage
 {
@@ -12,12 +11,11 @@ namespace ConsoleApp1.Storage
             VALUES (@Exchange, @Symbol, @Rule, @Message, @Value, @Threshold, @TimeMs);
             """;
 
-        // 쓰기: DbWriter가 열어둔 연결/트랜잭션 안에서 호출
         public int Insert(IDbConnection conn, IDbTransaction tx, IEnumerable<Alert> alerts)
         {
             var rows = alerts.Select(a => new
             {
-                Exchange = a.Exchange.ToString(),   // enum 그대로 넘기면 0,1 숫자로 저장됨 → 문자열로
+                Exchange = a.Exchange.ToString(),
                 a.Symbol,
                 a.Rule,
                 a.Message,
@@ -25,20 +23,24 @@ namespace ConsoleApp1.Storage
                 a.Threshold,
                 a.TimeMs,
             });
-            return conn.Execute(InsertSql, rows, tx);   // 리스트를 넘기면 Dapper가 건마다 실행
+            return conn.Execute(InsertSql, rows, tx);
         }
 
-        // 읽기: 최근 알림 N건 (최신순) → 텔레그램 /history, 대시보드용
-        public IReadOnlyList<AlertRow> GetRecent(int limit = 20)
+        // 최근 알림 N건 (최신순)
+        //  exchange/symbol을 안 주면 전체 (대시보드 하단)
+        //  주면 그 종목만 (텔레그램 [분석] 버튼)
+        public IReadOnlyList<AlertRow> GetRecent(int limit = 20, Exchange? exchange = null, string? symbol = null)
         {
             using var conn = db.Open();
             return conn.Query<AlertRow>("""
                 SELECT id AS Id, exchange AS Exchange, symbol AS Symbol, rule AS Rule, message AS Message,
                        value AS Value, threshold AS Threshold, time_ms AS TimeMs
                 FROM alerts
+                WHERE (@Exchange IS NULL OR exchange = @Exchange)
+                  AND (@Symbol IS NULL OR symbol = @Symbol)
                 ORDER BY time_ms DESC
                 LIMIT @Limit;
-                """, new { Limit = limit }).AsList();
+                """, new { Exchange = exchange?.ToString(), Symbol = symbol, Limit = limit }).AsList();
         }
     }
 }

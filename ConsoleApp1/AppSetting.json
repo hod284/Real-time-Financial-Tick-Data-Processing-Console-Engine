@@ -1,11 +1,15 @@
 {
   "Market": {
-    "DbPath": "",
-    "DbWriter": {
-      "FlushIntervalMs": 1000,
-      "MaxBatchSize": 500
-    }
+    "DbPath": "market.db",
+    "BinanceSymbols": [ "btcusdt", "ethusdt", "solusdt", "xrpusdt" ],
+    "UpbitCodes": [ "KRW-BTC", "KRW-ETH", "KRW-SOL", "KRW-XRP" ],
+    "DbWriter": { "FlushIntervalMs": 1000, "MaxBatchSize": 500 }
+  },
+  "Telegram": {
+    "BotToken": "",
+    "ChatId": 0
+  },
+  "Logging": {
+    "LogLevel": { "Default": "Information", "Microsoft.AspNetCore": "Warning" }
   }
-
-
 }

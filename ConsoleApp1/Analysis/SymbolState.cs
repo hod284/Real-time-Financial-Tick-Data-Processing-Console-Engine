@@ -107,5 +107,22 @@ namespace ConsoleApp1.Analysis
         {
             _lastAlertMs[rule] = nowMs;
         }
+        // 수첩 복사본 만들기 → MarketStore에 넣어서 웹·텔레그램이 읽게 함
+        // (디스패처가 OnTrade 직후에 부르므로 덱이 비어 있을 일이 없음)
+        public AnalysisSnapshot ToSnapshot()
+        {
+            decimal low = WindowLow, high = WindowHigh, avg = AverageMinuteVolume;
+            return new AnalysisSnapshot(
+                LastPrice,
+                low,
+                high,
+                low > 0 ? (double)((LastPrice - low) / low * 100m) : 0,
+                high > 0 ? (double)((LastPrice - high) / high * 100m) : 0,
+                CurrentMinuteVolume,
+                avg,
+                avg > 0 ? (double)(CurrentMinuteVolume / avg) : 0,
+                CompletedMinutes,
+                LastTimeMs);
+        }
     }
 }

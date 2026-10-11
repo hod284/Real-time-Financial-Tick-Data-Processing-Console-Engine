@@ -3,8 +3,8 @@ using Dapper;
 
 namespace ConsoleApp1.Storage
 {
-    // 구독 목록 저장 → 프로그램을 껐다 켜도 유지
-    // 추가/삭제는 가끔 일어나는 일이라 DbWriter 큐를 안 거치고 바로 씀
+    // 구독 목록 저장 → 껐다 켜도 유지
+    // 가끔 일어나는 일이라 DbWriter 큐를 안 거치고 바로 씀
     public sealed class SubscriptionRepository(Database db)
     {
         public IReadOnlyList<Subscription> GetAll()

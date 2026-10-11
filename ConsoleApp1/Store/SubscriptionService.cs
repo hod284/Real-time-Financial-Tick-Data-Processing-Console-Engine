@@ -84,7 +84,13 @@ namespace ConsoleApp1.Store
             Changed?.Invoke(ex);
             return true;
         }
-
+// 거래소 + 코드로 정확히 찾기 (텔레그램 버튼, 웹 상세 화면)
+        public Subscription? Find(Exchange ex, string symbol)
+        {
+            lock (_lock)
+                return _items.FirstOrDefault(s =>
+                    s.Exchange == ex && s.Symbol.Equals(symbol, StringComparison.OrdinalIgnoreCase));
+        }
         // 구독 중인 것 중에서 찾기: "비트코인", "BTC", "KRW-BTC", "BTCUSDT" 다 됨
         public IReadOnlyList<Subscription> Match(string input)
         {

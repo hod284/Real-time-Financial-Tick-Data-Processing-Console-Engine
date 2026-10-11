@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using ConsoleApp1.Models;
+using Dapper;
+using System.Data;
 namespace ConsoleApp1.Storage
 {
     // 티커는 이력을 쌓지 않고 종목별 "마지막 상태 1줄"만 유지 (UPSERT)
