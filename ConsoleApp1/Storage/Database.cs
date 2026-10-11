@@ -111,6 +111,15 @@ namespace ConsoleApp1.Storage
                 threshold  REAL    NOT NULL,
                 time_ms    INTEGER NOT NULL
             );
+            
+           CREATE TABLE IF NOT EXISTS subscriptions (
+                exchange    TEXT    NOT NULL,
+                symbol      TEXT    NOT NULL,
+                name        TEXT    NOT NULL,
+                created_ms  INTEGER NOT NULL,
+                PRIMARY KEY (exchange, symbol)
+            ) WITHOUT ROWID;
+
             CREATE INDEX IF NOT EXISTS ix_alerts_time ON alerts (time_ms);
             """;
     }

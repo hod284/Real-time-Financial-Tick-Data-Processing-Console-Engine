@@ -14,6 +14,7 @@ namespace ConsoleApp1.Adoator
         private ChannelWriter<MarketEvent>? _output;
         protected abstract string Name { get; }
         protected abstract Uri Endpoint { get; }
+        protected abstract bool HasTargets { get; }    // 구독 종목이 하나라도 있나
         protected virtual Task OnConnectedAsync(ClientWebSocket ws, CancellationToken ct)
         {
             return Task.CompletedTask;
@@ -34,15 +35,25 @@ namespace ConsoleApp1.Adoator
 
             while (!ct.IsCancellationRequested)                           // 바깥 루프: 재연결용
             {
+                 // 프로그램 종료(ct) 또는 Reconnect() 둘 중 하나만 와도 취소되는 토큰
+                using var connCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                _connCts = connCts;
+                var token = connCts.Token;
+                buffer.Clear();
                 try
                 {
+                     if (!HasTargets)
+                    {
+                        Console.WriteLine($"[{Name}] 구독 종목 없음 → 추가될 때까지 대기");
+                        await Task.Delay(Timeout.Infinite, token);     // Reconnect()가 깨워줌
+                    }
                     using var ws = new ClientWebSocket();
                     ws.Options.KeepAliveInterval = TimeSpan.FromSeconds(15);
 
                     await ws.ConnectAsync(Endpoint, ct);                   // ① 연결
                     await OnConnectedAsync(ws, ct);                        // ② 구독 (자식)
                     attempt = 0;
-
+                     Console.WriteLine($"[{Name}] 연결됨");
                     while (ws.State == WebSocketState.Open)                // 안쪽 루프: 수신용
                     {
                         var result = await ws.ReceiveAsync(buffer.GetMemory(16 * 1024), ct);   // ③ 올 때까지 기다림
@@ -60,7 +71,7 @@ namespace ConsoleApp1.Adoator
                         }     // ④ 해석 (자식)
                         catch (Exception) 
                         { 
-                            /* 해석 실패 로그 */ 
+                            Console.Error.WriteLine($"[{Name}] 해석 실패: {ex.Message}");/* 해석 실패 로그 */ 
                         }
                         buffer.Clear();
                     }

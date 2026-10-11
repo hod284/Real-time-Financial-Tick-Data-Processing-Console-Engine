@@ -9,7 +9,7 @@ namespace ConsoleApp1.Adoator
     public sealed class UpbiteFeed(IReadOnlyList<string> codes) : WebSocketFeedBase
     {
         protected override string Name => "Upbite";
-
+       protected override bool HasTargets => getCodes().Count > 0;
         protected override Uri Endpoint => new("wss://api.upbit.com/websocket/v1");
 
         protected override Task OnConnectedAsync(ClientWebSocket ws, CancellationToken ct)

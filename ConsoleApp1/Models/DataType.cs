@@ -81,6 +81,19 @@
         public int FlushIntervalMs { get; init; } 
         public int MaxBatchSize { get; init; }
     }
+// 구독 종목 (DB subscriptions 테이블과 1:1)
+    public sealed record Subscription(
+        Exchange Exchange,
+         string Symbol, 
+         string Name);
 
+    // 구독 종목 + 현재가 (웹 표, 텔레그램 /quote 에서 같이 씀)
+    public sealed record QuoteLine(
+        Exchange Exchange,
+        string Symbol,
+        string Name,
+        double? LastPrice,       // 아직 티커가 안 왔으면 null
+        double? ChangeRate24h,
+        long? UpdatedMs);
 
 }

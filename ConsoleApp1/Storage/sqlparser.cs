@@ -50,4 +50,10 @@ namespace ConsoleApp1.Storage
         public double Qty { get; set; }
         public string Side { get; set; } = "";
     }
+     public sealed class SubscriptionRow
+    {
+        public string Exchange { get; set; } = "";
+        public string Symbol { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
 }
