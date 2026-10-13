@@ -9,7 +9,7 @@
           --up:#e5534b; --down:#4c8ef7; --ok:#3fb950; --warn:#d29922; --accent:#3b82f6; }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: -apple-system, "Apple SD Gothic Neo", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
-  .layout { display: grid; grid-template-columns: 250px 1fr; grid-template-rows: 1fr auto; min-height: 100vh; }
+  .layout { display: grid; grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr ; min-height: 100vh; }
   aside { grid-row: 1 / span 2; background: var(--panel); border-right: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 20px; }
   main { padding: 20px; }
   footer { padding: 0 20px 20px; }
@@ -34,7 +34,7 @@
   .book { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
   .book td { padding: 1px 0; text-align: right; }
   .book tr.mid td { border-top: 1px solid var(--line); }
-  #alerts { list-style: none; padding: 0; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; max-height: 280px; overflow: auto; }
+  #alerts { list-style: none; padding: 0; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; max-height: 60vh; overflow: auto; }
   #alerts li { padding: 8px 12px; border-bottom: 1px solid var(--line); }
   #alerts li.mine { background: #1d2a44; }
   #alerts time { color: var(--muted); font-size: 12px; margin-right: 8px; }
