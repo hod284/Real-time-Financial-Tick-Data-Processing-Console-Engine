@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tick Dashboard</title>
+<style>
+  :root { --bg:#0f1115; --panel:#171a21; --line:#2a2f3a; --text:#e6e6e6; --muted:#8a8f98;
+          --up:#e5534b; --down:#4c8ef7; --ok:#3fb950; --warn:#d29922; --accent:#3b82f6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Apple SD Gothic Neo", sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+  .layout { display: grid; grid-template-columns: 250px 1fr; grid-template-rows: 1fr auto; min-height: 100vh; }
+  aside { grid-row: 1 / span 2; background: var(--panel); border-right: 1px solid var(--line); padding: 16px; display: flex; flex-direction: column; gap: 20px; }
+  main { padding: 20px; }
+  footer { padding: 0 20px 20px; }
+  h2 { font-size: 12px; color: var(--muted); margin: 0 0 8px; font-weight: 600; letter-spacing: .02em; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .muted { color: var(--muted); }
+  .up { color: var(--up); } .down { color: var(--down); }
+  .health div { display: flex; justify-content: space-between; padding: 3px 0; }
+  button { background: #222733; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; cursor: pointer; font: inherit; }
+  button.active { background: var(--accent); border-color: var(--accent); }
+  .ex-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .sym-list { display: flex; flex-direction: column; gap: 6px; }
+  .sym-row { display: flex; gap: 4px; }
+  .sym-row .sym { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sym-row .del { padding: 8px; color: var(--muted); }
+  form { display: flex; flex-direction: column; gap: 6px; }
+  input, select { background: #222733; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; }
+  #detailTitle { font-size: 18px; margin: 0 0 14px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 12px; color: var(--muted); }
+  .kv { display: flex; justify-content: space-between; padding: 2px 0; font-variant-numeric: tabular-nums; }
+  .book { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  .book td { padding: 1px 0; text-align: right; }
+  .book tr.mid td { border-top: 1px solid var(--line); }
+  #alerts { list-style: none; padding: 0; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; max-height: 280px; overflow: auto; }
+  #alerts li { padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  #alerts li.mine { background: #1d2a44; }
+  #alerts time { color: var(--muted); font-size: 12px; margin-right: 8px; }
+  @media (max-width: 720px) { .layout { grid-template-columns: 1fr; } aside { grid-row: auto; border-right: none; } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <section class="health">
+      <h2>수신 상태</h2>
+      <div id="health" class="muted">불러오는 중…</div>
+    </section>
+
+    <section>
+      <h2>거래소</h2>
+      <div class="ex-tabs">
+        <button data-ex="Binance">바이낸스</button>
+        <button data-ex="Upbit">업비트</button>
+      </div>
+    </section>
+
+    <section>
+      <h2 id="symTitle">구독 종목</h2>
+      <div id="symbols" class="sym-list"><span class="muted">거래소를 고르세요</span></div>
+    </section>
+
+    <section>
+      <h2>구독 추가</h2>
+      <form id="addForm">
+        <select id="addEx"><option value="Binance">바이낸스</option><option value="Upbit">업비트</option></select>
+        <input id="addInput" placeholder="비트코인, BTC, KRW-BTC" required>
+        <button>추가</button>
+        <span id="formMsg" class="muted"></span>
+      </form>
+    </section>
+  </aside>
+
+  <main>
+    <h1 id="detailTitle" class="muted">왼쪽에서 종목을 고르면 현재 상태가 표시돼요</h1>
+    <div id="cards" class="cards"></div>
+  </main>
+
+  <footer>
+    <h2>알림 <span id="hubStatus" class="muted"></span></h2>
+    <ul id="alerts"></ul>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const num = v => v == null ? "-" : Number(v).toLocaleString(undefined, { maximumFractionDigits: 8 });
+const pct = v => v == null ? "-" : (v > 0 ? "+" : "") + Number(v).toFixed(2) + "%";
+const sign = v => v > 0 ? "up" : v < 0 ? "down" : "";
+const time = ms => ms ? new Date(ms).toLocaleTimeString("ko-KR") : "-";
+const kv = (k, v, c = "") => `<div class="kv"><span class="muted">${k}</span><span class="${c}">${v}</span></div>`;
+const card = (title, body) => `<div class="card"><h3>${title}</h3>${body || '<span class="muted">아직 데이터 없음</span>'}</div>`;
+
+let overview = { feeds: [], subscriptions: [] };
+let currentEx = null;   // 사이드바에서 고른 거래소
+let selected = null;    // 고른 종목 { exchange, symbol }
+
+// ── 1) 왼쪽 위 수신 상태 + 구독 목록 (2초마다) ──
+async function loadOverview() {
+  overview = await (await fetch("/api/overview")).json();
+  $("health").innerHTML = overview.feeds.map(f => {
+    const c = f.state === "정상" ? "ok" : f.state === "구독 없음" ? "muted" : "warn";
+    const age = f.secondsSinceLast != null ? ` · ${f.secondsSinceLast}s` : "";
+    return `<div><span>${f.exchange} (${f.subscriptions})</span><span class="${c}">${esc(f.state)}${age}</span></div>`;
+  }).join("");
+  renderSymbols();
+}
+
+// ── 2) 거래소 버튼 → 구독 종목 버튼 ──
+document.querySelectorAll(".ex-tabs button").forEach(b => b.onclick = () => {
+  currentEx = b.dataset.ex;
+  document.querySelectorAll(".ex-tabs button").forEach(x => x.classList.toggle("active", x === b));
+  renderSymbols();
+});
+
+function renderSymbols() {
+  if (!currentEx) return;
+  const subs = overview.subscriptions.filter(s => s.exchange === currentEx);
+  $("symTitle").textContent = `${currentEx} 구독 종목 (${subs.length})`;
+  $("symbols").innerHTML = subs.length === 0
+    ? `<span class="muted">구독 종목이 없어요</span>`
+    : subs.map(s => {
+        const on = selected && selected.exchange === s.exchange && selected.symbol === s.symbol;
+        return `<div class="sym-row">
+          <button class="sym ${on ? "active" : ""}" data-ex="${s.exchange}" data-sym="${esc(s.symbol)}">
+            ${esc(s.name)} <span class="muted">${esc(s.symbol)}</span></button>
+          <button class="del" title="구독 삭제" data-ex="${s.exchange}" data-sym="${esc(s.symbol)}">✕</button>
+        </div>`;
+      }).join("");
+}
+
+// ── 3) 종목 버튼 → 선택 / ✕ → 구독 삭제 ──
+$("symbols").addEventListener("click", async e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const { ex, sym } = b.dataset;
+
+  if (b.classList.contains("del")) {
+    const res = await fetch(`/api/subscriptions/${ex}/${encodeURIComponent(sym)}`, { method: "DELETE" });
+    $("formMsg").textContent = (await res.json()).message;
+    if (selected && selected.exchange === ex && selected.symbol === sym) clearDetail();
+    loadOverview();
+    return;
+  }
+
+  selected = { exchange: ex, symbol: sym };
+  renderSymbols();
+  markAlerts();
+  loadDetail();
+});
+
+// ── 4) 구독 추가 ──
+$("addForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const exchange = $("addEx").value;
+  const res = await fetch("/api/subscriptions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ exchange, input: $("addInput").value }),
+  });
+  $("formMsg").textContent = (await res.json()).message;
+  if (res.ok) {
+    $("addInput").value = "";
+    document.querySelector(`.ex-tabs button[data-ex="${exchange}"]`).click();   // 그 거래소 목록 열기
+  }
+  loadOverview();
+});
+
+// ── 5) 선택 종목 현재 상태 (1초마다) ──
+async function loadDetail() {
+  if (!selected) return;
+  const res = await fetch(`/api/symbols/${selected.exchange}/${encodeURIComponent(selected.symbol)}`);
+  if (!res.ok) return;
+  const d = await res.json();
+  const s = d.snapshot;
+
+  $("detailTitle").className = "";
+  $("detailTitle").textContent = `${d.subscription.name} · ${d.subscription.symbol} (${d.subscription.exchange})`;
+
+  $("cards").innerHTML = [
+    card("체결", s.trade &&
+      kv("가격", num(s.trade.price)) +
+      kv("수량", num(s.trade.qty)) +
+      kv("방향", s.trade.side === "Buy" ? "매수" : "매도", s.trade.side === "Buy" ? "up" : "down") +
+      kv("시각", time(s.trade.exchTimeMs))),
+
+    card("호가 (상위 5)", s.orderBook && s.orderBook.bids && bookTable(s.orderBook)),
+
+    card("1분 캔들", s.candle &&
+      kv("시작", time(s.candle.openTimeMs)) +
+      kv("시가", num(s.candle.open)) +
+      kv("고가", num(s.candle.high), "up") +
+      kv("저가", num(s.candle.low), "down") +
+      kv("종가", num(s.candle.close)) +
+      kv("거래량", num(s.candle.volume))),
+
+    card("24시간 티커", s.ticker &&
+      kv("현재가", num(s.ticker.lastPrice)) +
+      kv("변동률", pct(s.ticker.changeRate24h * 100), sign(s.ticker.changeRate24h)) +
+      kv("고가", num(s.ticker.high24h)) +
+      kv("저가", num(s.ticker.low24h)) +
+      kv("거래량", num(s.ticker.volume24h))),
+
+    card("분석 상태 (SymbolState)", s.analysis &&
+      kv("60초 저가", num(s.analysis.windowLow)) +
+      kv("60초 고가", num(s.analysis.windowHigh)) +
+      kv("저점 대비", pct(s.analysis.riseFromLowPct), sign(s.analysis.riseFromLowPct)) +
+      kv("고점 대비", pct(s.analysis.fallFromHighPct), sign(s.analysis.fallFromHighPct)) +
+      kv("이번 1분 거래량", num(s.analysis.currentMinuteVolume)) +
+      kv("평균 대비", s.analysis.completedMinutes > 0 ? s.analysis.volumeRatio.toFixed(1) + "배" : "쌓이는 중") +
+      kv("평균 기간", s.analysis.completedMinutes + "분")),
+  ].join("");
+}
+
+function bookTable(b) {
+  const asks = b.asks.slice(0, 5).reverse()
+    .map(l => `<tr><td class="down">${num(l.price)}</td><td>${num(l.qty)}</td></tr>`).join("");
+  const bids = b.bids.slice(0, 5)
+    .map((l, i) => `<tr class="${i === 0 ? "mid" : ""}"><td class="up">${num(l.price)}</td><td>${num(l.qty)}</td></tr>`).join("");
+  return `<table class="book">${asks}${bids}</table>`;
+}
+
+function clearDetail() {
+  selected = null;
+  $("cards").innerHTML = "";
+  $("detailTitle").className = "muted";
+  $("detailTitle").textContent = "왼쪽에서 종목을 고르면 현재 상태가 표시돼요";
+  markAlerts();
+}
+
+// ── 6) 하단 알림 ──
+function addAlert(a, atTop = true) {
+  const li = document.createElement("li");
+  li.dataset.key = a.exchange + "|" + a.symbol;
+  li.innerHTML = `<time>${time(a.timeMs)}</time>`;
+  li.append(a.message);                          // 텍스트로 넣기 (HTML로 해석 안 되게)
+  const ul = $("alerts");
+  atTop ? ul.prepend(li) : ul.append(li);
+  while (ul.children.length > 100) ul.lastChild.remove();
+  markAlerts();
+}
+
+function markAlerts() {                          // 선택한 종목 알림은 강조
+  const key = selected ? selected.exchange + "|" + selected.symbol : "";
+  document.querySelectorAll("#alerts li").forEach(li => li.classList.toggle("mine", li.dataset.key === key));
+}
+
+// ── 시작 ──
+loadOverview();
+fetch("/api/alerts?limit=50").then(r => r.json()).then(list => list.forEach(a => addAlert(a, false)));
+setInterval(loadOverview, 2000);
+setInterval(loadDetail, 1000);
+
+// 새 알림은 서버가 밀어줌 (DashboardNotifier → SignalR)
+const conn = new signalR.HubConnectionBuilder().withUrl("/hub/dashboard").withAutomaticReconnect().build();
+conn.on("alert", a => addAlert(a));
+conn.onreconnecting(() => $("hubStatus").textContent = "(재연결 중…)");
+conn.onreconnected(() => $("hubStatus").textContent = "");
+conn.start().catch(() => $("hubStatus").textContent = "(실시간 연결 실패)");
+</script>
+</body>
+</html>

@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ConsoleApp1.Models;
 
 namespace ConsoleApp1.Telegram
 {
-    internal class QuoteViewModel
-    {
-    }
+    // [체결]/[호가]/[캔들]/[티커] 버튼 결과
+    //  Kind: "trade", "book", "candle", "ticker"
+    public sealed record QuoteViewModel(Subscription Subscription, string Kind, SymbolSnapshot Snapshot) : IMessage;
 }
