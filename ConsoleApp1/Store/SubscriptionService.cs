@@ -26,7 +26,8 @@ namespace ConsoleApp1.Store
             var saved = repo.GetAll();
             if (saved.Count > 0)
             {
-                lock (_lock) _items = saved.ToList();
+                lock (_lock) 
+                 _items = saved.ToList();
                 return;
             }
             foreach (var s in options.Value.BinanceSymbols) Add(Exchange.Binance, s, out _, notify: false);
