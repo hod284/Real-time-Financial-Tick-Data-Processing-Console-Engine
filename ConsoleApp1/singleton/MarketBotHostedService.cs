@@ -38,6 +38,9 @@ namespace ConsoleApp1.singleton
 
             // 뒤에서 따로 도는 작업들
             var writerTask = dbWriter.RunAsync();
+            _ = writerTask.ContinueWith(
+        t => Console.Error.WriteLine($"[DbWriter] 죽음: {t.Exception?.GetBaseException()}"),
+        TaskContinuationOptions.OnlyOnFaulted);
             var senders = observers.OfType<QueuedAlertObserver>().ToList();          // 대시보드, 텔레그램
             var senderTasks = senders.Select(s => s.RunAsync(CancellationToken.None)).ToList();
             var dispatchTask = Task.Run(() => DispatchAsync(ingest.Reader));

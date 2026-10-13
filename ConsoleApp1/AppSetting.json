@@ -1,8 +1,20 @@
 {
   "Market": {
     "DbPath": "market.db",
-    "BinanceSymbols": [ "btcusdt", "ethusdt", "solusdt", "xrpusdt" ],
-    "UpbitCodes": [ "KRW-BTC", "KRW-ETH", "KRW-SOL", "KRW-XRP" ],
+    "BinanceSymbols": [
+  "BTC","ETH","XRP","SOL","DOGE","ADA","TRX","AVAX","LINK","DOT",
+  "BCH","SHIB","XLM","SUI","HBAR","NEAR","APT","ETC","UNI","AAVE",
+  "POL","ATOM","ARB","SEI","ALGO","SAND","MANA","AXS","CHZ","GRT",
+  "IMX","STX","ENS","EGLD","THETA","IOTA","VET","QTUM","NEO","ZIL",
+  "BAT","PEPE","BONK","WLD","TIA","ONDO","ENA","ARKM","1INCH","ZRX"
+],
+"UpbitCodes": [
+  "BTC","ETH","XRP","SOL","DOGE","ADA","TRX","AVAX","LINK","DOT",
+  "BCH","SHIB","XLM","SUI","HBAR","NEAR","APT","ETC","UNI","AAVE",
+  "POL","ATOM","ARB","SEI","ALGO","SAND","MANA","AXS","CHZ","GRT",
+  "IMX","STX","ENS","EGLD","THETA","IOTA","VET","QTUM","NEO","ZIL",
+  "BAT","PEPE","BONK","WLD","TIA","ONDO","ENA","ARKM","1INCH","ZRX"
+],
     "DbWriter": { "FlushIntervalMs": 1000, "MaxBatchSize": 500 }
   },
   "Telegram": {

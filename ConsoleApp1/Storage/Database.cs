@@ -112,7 +112,7 @@ namespace ConsoleApp1.Storage
                 time_ms    INTEGER NOT NULL
             );
             
-           CREATE TABLE IF NOT EXISTS subscriptions (
+            CREATE TABLE IF NOT EXISTS subscriptions (
                 exchange    TEXT    NOT NULL,
                 symbol      TEXT    NOT NULL,
                 name        TEXT    NOT NULL,

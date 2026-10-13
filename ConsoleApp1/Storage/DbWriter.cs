@@ -47,7 +47,7 @@ namespace ConsoleApp1.Storage
             _maxBatch = Math.Max(1, options.Value.DbWriter.MaxBatchSize);
         }
 
-        public int Pending => _queue.Reader.Count;   // 아직 저장 안 된 건수
+        public int Pending => _queue.Reader.CanCount ? _queue.Reader.Count : -1;   // 아직 저장 안 된 건수
 
         // 넣기만 하고 바로 리턴 → 수신/분석 쪽이 DB 때문에 안 막힘
         public void Enqueue(MarketEvent e)
@@ -80,7 +80,14 @@ namespace ConsoleApp1.Storage
             {
                 await timer.WaitForNextTickAsync();    // 1초 대기
                 FlushAll(conn, batch);
-                LogStatsIfDue();                       // [선택]
+                try 
+                { 
+                    LogStatsIfDue(); 
+                }
+                catch (Exception ex) 
+                { 
+                    _logger.LogWarning(ex, "통계 로그 실패"); 
+                }
 
                 // Complete() 됐고 큐도 비었으면 종료
                 if (_queue.Reader.Completion.IsCompleted)
