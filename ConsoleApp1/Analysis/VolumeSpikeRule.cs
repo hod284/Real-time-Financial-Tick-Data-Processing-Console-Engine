@@ -16,8 +16,8 @@ namespace ConsoleApp1.Analysis
 
         public Alert? Evaluate(TradeEvent trade, SymbolState state)
         {
-            if (state.CompletedMinutes < MinHistoryMinutes)   // 켜자마자는 비교 대상이 없음
-                return null;
+           if (state.ActiveMinutes < MinHistoryMinutes)   // 체결이 있던 분이 5개는 있어야 판단
+                    return null;
             if (state.IsCoolingDown(Name, state.LastTimeMs, CooldownSeconds))
                 return null;
 
@@ -31,7 +31,7 @@ namespace ConsoleApp1.Analysis
 
             state.MarkAlerted(Name, state.LastTimeMs);
             string message = $"📊 [{state.Exchange}] {state.Symbol} 거래량 급증 {ratio:F1}배 " +
-                             $"(이번 1분 {state.CurrentMinuteVolume} / 최근 {state.CompletedMinutes}분 평균 {avg:F4}), 현재가 {state.LastPrice}";
+                             $"(이번 1분 {state.CurrentMinuteVolume} / 체결 있던 {state.ActiveMinutes}분 평균 {avg:F4}), 현재가 {state.LastPrice}";
             return new Alert(state.Exchange, state.Symbol, Name, message, ratio, Multiplier, state.LastTimeMs);
         }
     }

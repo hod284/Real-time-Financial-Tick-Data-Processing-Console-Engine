@@ -16,8 +16,12 @@ namespace ConsoleApp1.Adoator
         protected virtual Task OnConnectedAsync(ClientWebSocket ws, CancellationToken ct) => Task.CompletedTask;
         protected abstract void OnMessage(ReadOnlySpan<byte> payload, long recvMs);
 
-        protected void Emite(MarketEvent e) => _output?.TryWrite(e);
-
+      // 파싱 실패(null)는 채널에 안 넣음 → 뒤쪽(화면, DB, 분석)에 가짜 데이터가 안 감
+        protected void Emite(MarketEvent? e)
+        {
+            if (e is not null)
+              _output?.TryWrite(e);
+        }
         // 구독이 바뀌면 호출 → 지금 연결을 끊고 새 목록으로 바로 다시 연결
         public void Reconnect()
         {

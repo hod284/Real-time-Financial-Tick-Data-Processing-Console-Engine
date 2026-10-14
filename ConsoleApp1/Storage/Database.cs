@@ -33,7 +33,7 @@ namespace ConsoleApp1.Storage
         // =================================================================================
         public Database(IOptions<MarketOptions> options)
         {
-            FilePath = Path.GetFullPath(options.Value.DbPath);
+            FilePath = Path.GetFullPath(options.Value.DbPath, AppContext.BaseDirectory);
             _connectionString = new SqliteConnectionStringBuilder
             {
                 DataSource = FilePath,

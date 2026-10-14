@@ -5,7 +5,7 @@ namespace ConsoleApp1.Parsing
 {
     public static class Parser
     {
-        public static TradeEvent Parsetrade(Exchange ex, JsonDocument message, long recvMs)
+        public static TradeEvent? Parsetrade(Exchange ex, JsonDocument message, long recvMs)
         {
             
             TradeEvent trade;
@@ -25,15 +25,7 @@ namespace ConsoleApp1.Parsing
                 }
                 else
                 {
-                    trade = new TradeEvent(                                 // ★ 여기서 틀에 값을 채워 객체 생성
-                              Exchange: ex,
-                              Symbol: "",                 // "BTCUSDT"
-                              ExchTimeMs: 0,                   // 체결 시각
-                              RecvTimeMs: recvMs,                                           // 받은시각
-                              Price: 0,  // "65432.10" → 65432.10
-                              Qty: 0,  // "0.012"    → 0.012
-                              Side: Side.None,
-                              TradeId:0);
+                     return null;   // data가 없으면 버림
                 }
             }
             else
@@ -54,10 +46,14 @@ namespace ConsoleApp1.Parsing
                     trade_volume = tv.GetDecimal()!;
                 if (va.TryGetProperty("ask_bid", out var ab))
                     side = ab.GetString() == "BID" ? Side.Buy : Side.Sell;
+                if (!va.TryGetProperty("trade_timestamp", out var ts))   // GetProperty는 없으면 예외라 Try로
+                    return null;
+                if (symbol.Length == 0 || trade_price <= 0)               // ← 가격 0은 내보내지 않음 (핵심)
+                      return null;
                 trade = new TradeEvent(
                 Exchange: ex,
                 Symbol: symbol,          // "KRW-BTC"
-                ExchTimeMs: va.GetProperty("trade_timestamp").GetInt64(), // 체결 시각
+                ExchTimeMs: ts.GetInt64(), // 체결 시각
                 RecvTimeMs: recvMs,                                       // 받은시각
                 Price: trade_price,   // 숫자로 옴 → 바로 읽음
                 Qty: trade_volume,
@@ -67,7 +63,7 @@ namespace ConsoleApp1.Parsing
             return trade;
         }
 
-        public static OrderBookEvent orderBookEvent(Exchange ex, JsonDocument  message, long recvMs)
+        public static OrderBookEvent? orderBookEvent(Exchange ex, JsonDocument  message, long recvMs)
         {
             string symbol = string.Empty;
             if(message.RootElement.TryGetProperty("stream", out var sta))
@@ -104,14 +100,7 @@ namespace ConsoleApp1.Parsing
                 }
                 else
                 {
-                    orderBook = new OrderBookEvent(
-                          Exchange: ex,
-                          Symbol: "",
-                          ExchTimeMs: recvMs,   // 교환 시간을 따로 안주어서 받는시간만 줌
-                          RecvTimeMs: recvMs,   //
-                          Bids: null,
-                          Asks: null
-                          );
+                  return null;
                 }
             }
             else
@@ -146,20 +135,17 @@ namespace ConsoleApp1.Parsing
                 }
                 else
                 {
-                    orderBook = new OrderBookEvent(
-                           Exchange: ex,
-                           Symbol: sy,
-                           ExchTimeMs: time,
-                           RecvTimeMs: recvMs,
-                            Bids: null,
-                             Asks: null);
+                    return null;
                 }
 
             }
+            if (orderBook.Symbol.Length == 0)
+                 return null;
+
             return orderBook;
         }
         
-        public static CandleEvent candleEvent(Exchange ex, JsonDocument  message, long recvMs)
+        public static CandleEvent? candleEvent(Exchange ex, JsonDocument  message, long recvMs)
         {
             Exchange exchange = Exchange.None;
             string symbol = string.Empty;
@@ -215,6 +201,9 @@ namespace ConsoleApp1.Parsing
                 interval = "1m";
                 isclosed = false;
             }
+            if (symbol.Length == 0 || opentimeMs == 0 || close <= 0)
+                   return null;
+
             return   new CandleEvent(
                       Exchange: exchange,
                       Symbol: symbol,
@@ -230,7 +219,7 @@ namespace ConsoleApp1.Parsing
                        IsClosed: isclosed);     // 바이낸스는 마감 플래그가 있음
         }
         
-        public static TickerEvent tickerEvent(Exchange ex, JsonDocument message, long recvMs)
+        public static TickerEvent? tickerEvent(Exchange ex, JsonDocument message, long recvMs)
         {
         
             Exchange exchange = Exchange.None;
@@ -274,6 +263,9 @@ namespace ConsoleApp1.Parsing
                 if (r.TryGetProperty("low_price", out var lo))
                     low24 = lo.GetDecimal();
             }
+            if (symbol.Length == 0 || lastprice <= 0)
+                 return null;
+                 
             return  new TickerEvent(
                   Exchange:exchange,
                   Symbol: symbol,

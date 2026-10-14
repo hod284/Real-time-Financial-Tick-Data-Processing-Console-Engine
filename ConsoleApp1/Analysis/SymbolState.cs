@@ -30,9 +30,24 @@ namespace ConsoleApp1.Analysis
         private long _currentMinuteStartMs;
         private bool _firstMinuteDone;
         public decimal CurrentMinuteVolume { get; private set; }   // 지금 진행 중인 1분
-        public int CompletedMinutes => _minuteVolumes.Count;
-        public decimal AverageMinuteVolume => _minuteVolumes.Count == 0 ? 0 : _minuteVolumes.Average();
+        public int CompletedMinutes => _minuteVolumes.Count;                    // 지난 분 전체 (0 포함)
+        public int ActiveMinutes => _minuteVolumes.Count(v => v > 0);           // 그중 체결이 있던 분
 
+         // 평균은 체결이 있던 분만으로 계산 (0인 분은 제외)
+         //  예) 0, 0, 0, 54, 0, 0 → 예전: 9 / 지금: 54
+        public decimal AverageMinuteVolume
+        {
+             get
+             {
+                decimal sum = 0;
+                int n = 0;
+                foreach (var v in _minuteVolumes)
+                {
+                  if (v > 0) { sum += v; n++; }
+                }
+                return n == 0 ? 0 : sum / n;
+            }
+        }
         // ── 3) 쿨다운 ──
         private readonly Dictionary<string, long> _lastAlertMs = new();
 
