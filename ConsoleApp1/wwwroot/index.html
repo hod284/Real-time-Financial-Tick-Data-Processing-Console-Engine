@@ -25,6 +25,7 @@
   .sym-row .sym { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .sym-row .del { padding: 8px; color: var(--muted); }
   form { display: flex; flex-direction: column; gap: 6px; }
+  [hidden] { display: none !important; }
   input, select { background: #222733; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; }
   #detailTitle { font-size: 18px; margin: 0 0 14px; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
@@ -70,6 +71,17 @@
         <button>추가</button>
         <span id="formMsg" class="muted"></span>
       </form>
+    </section>
+
+    <section>
+      <h2>텔레그램</h2>
+      <div id="tgStatus" class="muted">불러오는 중…</div>
+      <form id="tgForm" hidden>
+        <input id="tgToken" type="password" placeholder="BotFather에서 받은 봇 토큰" autocomplete="off" required>
+        <button>연결</button>
+      </form>
+      <button id="tgOff" hidden>연결 해제</button>
+      <span id="tgMsg" class="muted"></span>
     </section>
   </aside>
 
@@ -249,11 +261,44 @@ function markAlerts() {                          // 선택한 종목 알림은 �
   document.querySelectorAll("#alerts li").forEach(li => li.classList.toggle("mine", li.dataset.key === key));
 }
 
+// ── 7) 텔레그램 설정 (2초마다 상태 확인) ──
+async function loadTelegram() {
+  const s = await (await fetch("/api/telegram")).json();
+  const bot = s.botName ? `@${esc(s.botName)}` : "봇";
+  $("tgStatus").innerHTML =
+    s.state === "연결됨"      ? `<span class="ok">● 연결됨</span> ${bot}` :
+    s.state === "메시지 대기" ? `<span class="warn">● 메시지 대기</span><br><span class="muted">텔레그램에서 ${bot}에게 아무 메시지나 보내세요</span>` :
+                                `<span class="muted">● 미설정 (알림은 대시보드에만 표시)</span>`;
+  $("tgForm").hidden = s.state !== "미설정";
+  $("tgOff").hidden = s.state === "미설정";
+}
+
+$("tgForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  $("tgMsg").textContent = "토큰 확인 중…";
+  const res = await fetch("/api/telegram", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: $("tgToken").value }),
+  });
+  $("tgMsg").textContent = (await res.json()).message;
+  if (res.ok) $("tgToken").value = "";
+  loadTelegram();
+});
+
+$("tgOff").addEventListener("click", async () => {
+  const res = await fetch("/api/telegram", { method: "DELETE" });
+  $("tgMsg").textContent = (await res.json()).message;
+  loadTelegram();
+});
+
 // ── 시작 ──
 loadOverview();
 fetch("/api/alerts?limit=50").then(r => r.json()).then(list => list.forEach(a => addAlert(a, false)));
 setInterval(loadOverview, 2000);
 setInterval(loadDetail, 1000);
+loadTelegram();
+setInterval(loadTelegram, 2000);
 
 // 새 알림은 서버가 밀어줌 (DashboardNotifier → SignalR)
 const conn = new signalR.HubConnectionBuilder().withUrl("/hub/dashboard").withAutomaticReconnect().build();

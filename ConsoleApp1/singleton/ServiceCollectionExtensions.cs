@@ -8,7 +8,6 @@ using ConsoleApp1.Store;
 using ConsoleApp1.Telegram;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Telegram.Bot;
 
 namespace ConsoleApp1.singleton
 {
@@ -46,22 +45,17 @@ namespace ConsoleApp1.singleton
             services.AddSingleton<DashboardNotifier>();
             services.AddSingleton<IAlertObserver>(sp => sp.GetRequiredService<DashboardNotifier>());
 
-            // 텔레그램: 토큰이 있을 때만
-            var token = config["Telegram:BotToken"];
-            if (!string.IsNullOrWhiteSpace(token))
-            {
-                services.AddSingleton<ITelegramBotClient>(_ => new TelegramBotClient(token));   // 보내기/받기 공용
+            // 텔레그램: 항상 등록. 토큰은 대시보드에서 입력 (없으면 텔레그램만 쉬고 나머지는 정상 동작)
+            services.AddSingleton<TelegramSettings>();                  // 토큰/ChatId/봇 클라이언트 보관
+            services.AddSingleton<TelegramNotifier>();
+            services.AddSingleton<IAlertObserver>(sp => sp.GetRequiredService<TelegramNotifier>());
 
-                services.AddSingleton<TelegramNotifier>();
-                services.AddSingleton<IAlertObserver>(sp => sp.GetRequiredService<TelegramNotifier>());
-
-                // 명령 (Command): 새 버튼 기능 = 여기 한 줄
-                services.AddSingleton<ICommand, ExchangeCommand>();
-                services.AddSingleton<ICommand, SymbolCommand>();
-                services.AddSingleton<ICommand, ValueCommand>();
-                services.AddSingleton<ICommand, AnalysisCommand>();
-                services.AddHostedService<TelegramReceiver>();
-            }
+            // 명령 (Command): 새 버튼 기능 = 여기 한 줄
+            services.AddSingleton<ICommand, ExchangeCommand>();
+            services.AddSingleton<ICommand, SymbolCommand>();
+            services.AddSingleton<ICommand, ValueCommand>();
+            services.AddSingleton<ICommand, AnalysisCommand>();
+            services.AddHostedService<TelegramReceiver>();
 
             services.AddSingleton<EventBus>();
             services.AddHostedService<MarketBotHostedService>();

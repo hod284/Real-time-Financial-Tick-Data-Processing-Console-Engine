@@ -2,6 +2,7 @@ using ConsoleApp1.Health;
 using ConsoleApp1.Models;
 using ConsoleApp1.Storage;
 using ConsoleApp1.Store;
+using ConsoleApp1.Telegram;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
@@ -46,6 +47,21 @@ namespace ConsoleApp1.Dashboard
                     subs.Remove(exchange, symbol)
                         ? Results.Ok(new { message = $"{symbol} 구독 해제" })
                         : Results.NotFound(new { message = $"{symbol}은 구독 중이 아니에요" }));
+
+            // 텔레그램 설정 (토큰은 응답에 절대 넣지 않음)
+            app.MapGet("/api/telegram", (TelegramSettings tg) => tg.Status);
+
+            app.MapPost("/api/telegram", async (TelegramTokenRequest req, TelegramSettings tg, CancellationToken ct) =>
+            {
+                var (ok, message) = await tg.ConnectAsync(req.Token ?? "", ct);
+                return ok ? Results.Ok(new { message }) : Results.BadRequest(new { message });
+            });
+
+            app.MapDelete("/api/telegram", (TelegramSettings tg) =>
+            {
+                tg.Disconnect();
+                return Results.Ok(new { message = "텔레그램 연결을 해제했어요" });
+            });
 
             // 새 알림 실시간 push
             app.MapHub<DashboardHub>("/hub/dashboard");

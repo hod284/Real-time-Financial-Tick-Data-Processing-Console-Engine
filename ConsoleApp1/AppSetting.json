@@ -18,8 +18,8 @@
     "DbWriter": { "FlushIntervalMs": 1000, "MaxBatchSize": 500 }
   },
   "Telegram": {
-    "BotToken": "8806357908:AAELuG6mVIRr0eWTz5tJGwc4sqAjhfq1-m8",
-    "ChatId": 8170567543
+    "BotToken": "",
+    "ChatId": 0
   },
   "Logging": {
     "LogLevel": { "Default": "Information", "Microsoft.AspNetCore": "Warning" }

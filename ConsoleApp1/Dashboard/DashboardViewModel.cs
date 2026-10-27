@@ -11,4 +11,7 @@ namespace ConsoleApp1.Dashboard
 
     // 구독 추가 요청: { "exchange": "Upbit", "input": "비트코인" }
     public sealed record AddSubscriptionRequest(Exchange Exchange, string Input);
+
+    // 텔레그램 연결 요청: { "token": "123456:ABC..." }
+    public sealed record TelegramTokenRequest(string? Token);
 }
